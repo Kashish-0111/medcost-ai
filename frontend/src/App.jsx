@@ -96,76 +96,93 @@ function App() {
         </div>
 
         {/* Results */}
-        {results && (
-          <div>
-            <h2 className="text-xl font-bold text-gray-800 mb-4">
-              Top Hospitals for <span className="text-teal-600">{results.procedure}</span> in <span className="text-teal-600">{results.city}</span>
-            </h2>
+   {results && (
+  <div>
+    <h2 className="text-xl font-bold text-gray-800 mb-4">
+      Top Hospitals for <span className="text-teal-600">{results.aiDetectedProcedure || results.procedure}</span> in <span className="text-teal-600">{results.city}</span>
+    </h2>
 
-            <div className="flex flex-col gap-6">
-              {results.topHospitals.map((item, index) => (
-                <div key={index} className="bg-white rounded-2xl shadow-md p-6">
-                  {/* Hospital Header */}
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-2xl font-bold text-teal-500">#{index + 1}</span>
-                      <div>
-                        <h3 className="text-lg font-bold text-gray-800">{item.hospital.name}</h3>
-                        <p className="text-gray-500 text-sm">{item.hospital.address}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-semibold">
-                        Score: {item.score}
-                      </span>
-                    </div>
-                  </div>
+    {/* AI Detection Info */}
+    {results.aiDetectedProcedure && (
+      <div className="bg-teal-50 border border-teal-200 rounded-xl p-4 mb-6">
+        <p className="text-teal-700 font-medium">
+          🤖 AI detected: <span className="font-bold">{results.aiDetectedProcedure}</span>
+          <span className="ml-2 text-sm">({results.confidence}% confidence)</span>
+        </p>
+        {results.suggestions?.length > 0 && (
+          <ul className="mt-2 text-sm text-teal-600">
+            {results.suggestions.map((s, i) => (
+              <li key={i}>💡 {s}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+    )}
 
-                  {/* Hospital Details */}
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                    <div className="bg-gray-50 rounded-lg p-3 text-center">
-                      <p className="text-xs text-gray-500">Rating</p>
-                      <p className="font-bold text-gray-800">⭐ {item.hospital.rating}/5</p>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-3 text-center">
-                      <p className="text-xs text-gray-500">Success Rate</p>
-                      <p className="font-bold text-green-600">{item.hospital.successRate}%</p>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-3 text-center">
-                      <p className="text-xs text-gray-500">Accreditation</p>
-                      <p className="font-bold text-blue-600">{item.hospital.accreditation}</p>
-                    </div>
-                    <div className="bg-gray-50 rounded-lg p-3 text-center">
-                      <p className="text-xs text-gray-500">Total Beds</p>
-                      <p className="font-bold text-gray-800">{item.hospital.totalBeds}</p>
-                    </div>
-                  </div>
+    <div className="flex flex-col gap-6">
+      {results.topHospitals.map((item, index) => (
+        <div key={index} className="bg-white rounded-2xl shadow-md p-6">
+          {/* Hospital Header */}
+          <div className="flex items-start justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl font-bold text-teal-500">#{index + 1}</span>
+              <div>
+                <h3 className="text-lg font-bold text-gray-800">{item.hospital.name}</h3>
+                <p className="text-gray-500 text-sm">{item.hospital.address}</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <span className="bg-teal-100 text-teal-700 px-3 py-1 rounded-full text-sm font-semibold">
+                Score: {item.score}
+              </span>
+            </div>
+          </div>
 
-                  {/* Cost Breakdown */}
-                  <div className="border-t pt-4">
-                    <h4 className="font-semibold text-gray-700 mb-3">💰 Cost Estimate</h4>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                      {[
-                        { label: 'Surgery', data: item.costEstimate.surgery, color: 'blue' },
-                        { label: 'Hospital', data: item.costEstimate.hospital, color: 'purple' },
-                        { label: 'Medicines', data: item.costEstimate.medicines, color: 'green' },
-                        { label: 'Buffer', data: item.costEstimate.buffer, color: 'yellow' },
-                        { label: 'Total', data: item.costEstimate.total, color: 'teal' },
-                      ].map((cost, i) => (
-                        <div key={i} className={`bg-${cost.color}-50 rounded-lg p-3 text-center`}>
-                          <p className="text-xs text-gray-500">{cost.label}</p>
-                          <p className="font-bold text-gray-800 text-xs">
-                            ₹{(cost.data.min/1000).toFixed(0)}k - ₹{(cost.data.max/1000).toFixed(0)}k
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+          {/* Hospital Details */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+            <div className="bg-gray-50 rounded-lg p-3 text-center">
+              <p className="text-xs text-gray-500">Rating</p>
+              <p className="font-bold text-gray-800">⭐ {item.hospital.rating}/5</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3 text-center">
+              <p className="text-xs text-gray-500">Success Rate</p>
+              <p className="font-bold text-green-600">{item.hospital.successRate}%</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3 text-center">
+              <p className="text-xs text-gray-500">Accreditation</p>
+              <p className="font-bold text-blue-600">{item.hospital.accreditation}</p>
+            </div>
+            <div className="bg-gray-50 rounded-lg p-3 text-center">
+              <p className="text-xs text-gray-500">Total Beds</p>
+              <p className="font-bold text-gray-800">{item.hospital.totalBeds}</p>
+            </div>
+          </div>
+
+          {/* Cost Breakdown */}
+          <div className="border-t pt-4">
+            <h4 className="font-semibold text-gray-700 mb-3">💰 Cost Estimate</h4>
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              {[
+                { label: 'Surgery', data: item.costEstimate.surgery, color: 'blue' },
+                { label: 'Hospital', data: item.costEstimate.hospital, color: 'purple' },
+                { label: 'Medicines', data: item.costEstimate.medicines, color: 'green' },
+                { label: 'Buffer', data: item.costEstimate.buffer, color: 'yellow' },
+                { label: 'Total', data: item.costEstimate.total, color: 'teal' },
+              ].map((cost, i) => (
+                <div key={i} className={`bg-${cost.color}-50 rounded-lg p-3 text-center`}>
+                  <p className="text-xs text-gray-500">{cost.label}</p>
+                  <p className="font-bold text-gray-800 text-xs">
+                    ₹{(cost.data.min/1000).toFixed(0)}k - ₹{(cost.data.max/1000).toFixed(0)}k
+                  </p>
                 </div>
               ))}
             </div>
           </div>
-        )}
+        </div>
+      ))}
+    </div>
+  </div>
+)}
       </main>
     </div>
   )
