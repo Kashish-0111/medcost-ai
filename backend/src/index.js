@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import connectDB from './config/db.js'
 import searchRoutes from './routes/searchRoutes.js'
+import authRoutes from './routes/authRoutes.js'
 
 dotenv.config()
 
@@ -16,6 +17,7 @@ app.use(express.json())
 connectDB()
 
 app.use('/api', searchRoutes)
+app.use('/api/auth',authRoutes)
 
 
 app.get('/health', (req, res) => {
