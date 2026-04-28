@@ -1,11 +1,26 @@
 import { useState } from 'react'
 import axios from 'axios'
+import Auth from './components/Auth'
 
 function App() {
   const [form, setForm] = useState({ procedure: '', city: '', budget: '' })
   const [results, setResults] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [user, setUser] = useState(() => {
+  const saved = localStorage.getItem('user')
+  return saved ? JSON.parse(saved) : null
+})
+
+const handleLogin = (userData) => {
+  setUser(userData)
+}
+
+const handleLogout = () => {
+  localStorage.removeItem('token')
+  localStorage.removeItem('user')
+  setUser(null)
+}
 
   const handleSearch = async (e) => {
     e.preventDefault()
@@ -26,19 +41,32 @@ function App() {
       setLoading(false)
     }
   }
-
+   if(!user){
+    return <Auth onLogin={handleLogin} />
+   }
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-teal-50">
       {/* Header */}
       <header className="bg-white shadow-sm py-4 px-6">
-        <div className="max-w-4xl mx-auto flex items-center gap-3">
-          <span className="text-3xl">🏥</span>
-          <div>
-            <h1 className="text-2xl font-bold text-teal-600">MedCost AI</h1>
-            <p className="text-gray-500 text-sm">AI-Powered Healthcare Navigator & Cost Estimator</p>
-          </div>
-        </div>
-      </header>
+        <div className="max-w-4xl mx-auto flex items-center justify-between">
+        <div className="flex items-center gap-3">
+        <span className="text-3xl">🏥</span>
+      <div>
+        <h1 className="text-2xl font-bold text-teal-600">MedCost AI</h1>
+        <p className="text-gray-500 text-sm">AI-Powered Healthcare Navigator & Cost Estimator</p>
+      </div>
+    </div>
+    <div className="flex items-center gap-3">
+      <span className="text-gray-600 text-sm"> {user.name}</span>
+      <button
+        onClick={handleLogout}
+        className="bg-red-50 text-red-500 px:3 py-1 rounded-lg text-sm hover:bg-red-100"
+      >
+        Logout
+      </button>
+    </div>
+  </div>
+</header>
 
       <main className="max-w-4xl mx-auto px-6 py-10">
         {/* Search Form */}
